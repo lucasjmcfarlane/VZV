@@ -4,7 +4,7 @@
 mkdir VZV
 
 cp -r src VZV/
-cp -r styles VZV/
+cp -r colorschemes VZV/
 cp Makefile VZV/
 cp README.md VZV/
 
