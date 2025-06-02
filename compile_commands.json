@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/home/lucas/GitHub/VZV",
+    "command": "gcc -I/home/lucas/GitHub/VZV/zig-out/include -I/home/lucas/GitHub/VZV/src -I/home/lucas/GitHub/VZV/colorschemes/gruvbox -std=c11 -c src/main.c",
+    "file": "src/main.c"
+  },
+  {
+    "directory": "/home/lucas/GitHub/VZV",
+    "command": "gcc -I/home/lucas/GitHub/VZV/zig-out/include -I/home/lucas/GitHub/VZV/src -I/home/lucas/GitHub/VZV/colorschemes/gruvbox -std=c11 -c src/palette.c",
+    "file": "src/palette.c"
+  },
+]

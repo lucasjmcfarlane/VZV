@@ -1,7 +1,4 @@
-#ifndef GRUVBOX_H
-#define GRUVBOX_H
-
-#include "raylib.h"
+#include <raylib.h>
 #include <stdint.h>
 
 enum GruvboxColors{
@@ -65,5 +62,3 @@ enum GruvboxColors{
 char* GetColorName(int index);
 
 extern const Color Gruvbox[NUM_COLORS];
-
-#endif

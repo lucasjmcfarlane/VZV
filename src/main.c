@@ -1,5 +1,5 @@
-#include "raylib.h"
-#include "../colorschemes/gruvbox/gruvbox.h"
+#include <raylib.h>
+#include <gruvbox.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"

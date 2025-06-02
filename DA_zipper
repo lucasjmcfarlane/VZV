@@ -1,12 +1,13 @@
 #/bin/bash
 
-
 mkdir VZV
 
 cp -r src VZV/
 cp -r colorschemes VZV/
-cp Makefile VZV/
+cp build.zig VZV/
+cp build.zig.zon VZV/
 cp README.md VZV/
+cp compile_commands.json VZV/
 
 cd VZV
 zip -r VZV_$1.zip .
