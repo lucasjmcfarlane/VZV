@@ -1,6 +1,6 @@
 #include "gruvbox.h"
 
-const Color Gruvbox[NUM_COLORS] = {
+const Color Gruvbox[GRUVBOX_NUM_COLORS] = {
     {0x1d, 0x20, 0x21, 255},
     {0x28, 0x28, 0x28, 255},
     {0x32, 0x30, 0x2f, 255},
@@ -59,61 +59,61 @@ const Color Gruvbox[NUM_COLORS] = {
 
 char* GetColorName(int index){
     switch (index){
-        case DARK0_HARD: return "DARK0_HARD";
-        case DARK0: return "DARK0";
-        case DARK0_SOFT: return "DARK0_SOFT";
-        case DARK1: return "DARK1";
-        case DARK2: return "DARK2";
-        case DARK3: return "DARK3";
-        case DARK4: return "DARK4";
-        case LIGHT0_HARD: return "LIGHT0_HARD";
-        case LIGHT0: return "LIGHT0";
-        case LIGHT0_SOFT: return "LIGHT0_SOFT";
-        case LIGHT1: return "LIGHT1";
-        case LIGHT2: return "LIGHT2";
-        case LIGHT3: return "LIGHT3";
-        case LIGHT4: return "LIGHT4";
-        case BRIGHT_RED: return "BRIGHT_RED";
-        case BRIGHT_GREEN: return "BRIGHT_GREEN";
-        case BRIGHT_YELLOW: return "BRIGHT_YELLOW";
-        case BRIGHT_BLUE: return "BRIGHT_BLUE";
-        case BRIGHT_PURPLE: return "BRIGHT_PURPLE";
-        case BRIGHT_AQUA: return "BRIGHT_AQUA";
-        case BRIGHT_ORANGE: return "BRIGHT_ORANGE";
-        case NEUTRAL_RED: return "NEUTRAL_RED";
-        case NEUTRAL_GREEN: return "NEUTRAL_GREEN";
-        case NEUTRAL_YELLOW: return "NEUTRAL_YELLOW";
-        case NEUTRAL_BLUE: return "NEUTRAL_BLUE";
-        case NEUTRAL_PURPLE: return "NEUTRAL_PURPLE";
-        case NEUTRAL_AQUA: return "NEUTRAL_AQUA";
-        case NEUTRAL_ORANGE: return "NEUTRAL_ORANGE";
-        case FADED_RED: return "FADED_RED";
-        case FADED_GREEN: return "FADED_GREEN";
-        case FADED_YELLOW: return "FADED_YELLOW";
-        case FADED_BLUE: return "FADED_BLUE";
-        case FADED_PURPLE: return "FADED_PURPLE";
-        case FADED_AQUA: return "FADED_AQUA";
-        case FADED_ORANGE: return "FADED_ORANGE";
-        case DARK_RED_HARD: return "DARK_RED_HARD";
-        case DARK_RED: return "DARK_RED";
-        case DARK_RED_SOFT: return "DARK_RED_SOFT";
-        case LIGHT_RED_HARD: return "LIGHT_RED_HARD";
-        case LIGHT_RED: return "LIGHT_RED";
-        case LIGHT_RED_SOFT: return "LIGHT_RED_SOFT";
-        case DARK_GREEN_HARD: return "DARK_GREEN_HARD";
-        case DARK_GREEN: return "DARK_GREEN";
-        case DARK_GREEN_SOFT: return "DARK_GREEN_SOFT";
-        case LIGHT_GREEN_HARD: return "LIGHT_GREEN_HARD";
-        case LIGHT_GREEN: return "LIGHT_GREEN";
-        case LIGHT_GREEN_SOFT: return "LIGHT_GREEN_SOFT";
-        case DARK_AQUA_HARD: return "DARK_AQUA_HARD";
-        case DARK_AQUA: return "DARK_AQUA";
-        case DARK_AQUA_SOFT: return "DARK_AQUA_SOFT";
-        case LIGHT_AQUA_HARD: return "LIGHT_AQUA_HARD";
-        case LIGHT_AQUA: return "LIGHT_AQUA";
-        case LIGHT_AQUA_SOFT: return "LIGHT_AQUA_SOFT";
-        case GREY: return "GREY";
-        case NUM_COLORS: return "NUM_COLORS";
+        case GRUVBOX_DARK0_HARD: return "GRUVBOX_DARK0_HARD";
+        case GRUVBOX_DARK0: return "GRUVBOX_DARK0";
+        case GRUVBOX_DARK0_SOFT: return "GRUVBOX_DARK0_SOFT";
+        case GRUVBOX_DARK1: return "GRUVBOX_DARK1";
+        case GRUVBOX_DARK2: return "GRUVBOX_DARK2";
+        case GRUVBOX_DARK3: return "GRUVBOX_DARK3";
+        case GRUVBOX_DARK4: return "GRUVBOX_DARK4";
+        case GRUVBOX_LIGHT0_HARD: return "GRUVBOX_LIGHT0_HARD";
+        case GRUVBOX_LIGHT0: return "GRUVBOX_LIGHT0";
+        case GRUVBOX_LIGHT0_SOFT: return "GRUVBOX_LIGHT0_SOFT";
+        case GRUVBOX_LIGHT1: return "GRUVBOX_LIGHT1";
+        case GRUVBOX_LIGHT2: return "GRUVBOX_LIGHT2";
+        case GRUVBOX_LIGHT3: return "GRUVBOX_LIGHT3";
+        case GRUVBOX_LIGHT4: return "GRUVBOX_LIGHT4";
+        case GRUVBOX_BRIGHT_RED: return "GRUVBOX_BRIGHT_RED";
+        case GRUVBOX_BRIGHT_GREEN: return "GRUVBOX_BRIGHT_GREEN";
+        case GRUVBOX_BRIGHT_YELLOW: return "GRUVBOX_BRIGHT_YELLOW";
+        case GRUVBOX_BRIGHT_BLUE: return "GRUVBOX_BRIGHT_BLUE";
+        case GRUVBOX_BRIGHT_PURPLE: return "GRUVBOX_BRIGHT_PURPLE";
+        case GRUVBOX_BRIGHT_AQUA: return "GRUVBOX_BRIGHT_AQUA";
+        case GRUVBOX_BRIGHT_ORANGE: return "GRUVBOX_BRIGHT_ORANGE";
+        case GRUVBOX_NEUTRAL_RED: return "GRUVBOX_NEUTRAL_RED";
+        case GRUVBOX_NEUTRAL_GREEN: return "GRUVBOX_NEUTRAL_GREEN";
+        case GRUVBOX_NEUTRAL_YELLOW: return "GRUVBOX_NEUTRAL_YELLOW";
+        case GRUVBOX_NEUTRAL_BLUE: return "GRUVBOX_NEUTRAL_BLUE";
+        case GRUVBOX_NEUTRAL_PURPLE: return "GRUVBOX_NEUTRAL_PURPLE";
+        case GRUVBOX_NEUTRAL_AQUA: return "GRUVBOX_NEUTRAL_AQUA";
+        case GRUVBOX_NEUTRAL_ORANGE: return "GRUVBOX_NEUTRAL_ORANGE";
+        case GRUVBOX_FADED_RED: return "GRUVBOX_FADED_RED";
+        case GRUVBOX_FADED_GREEN: return "GRUVBOX_FADED_GREEN";
+        case GRUVBOX_FADED_YELLOW: return "GRUVBOX_FADED_YELLOW";
+        case GRUVBOX_FADED_BLUE: return "GRUVBOX_FADED_BLUE";
+        case GRUVBOX_FADED_PURPLE: return "GRUVBOX_FADED_PURPLE";
+        case GRUVBOX_FADED_AQUA: return "GRUVBOX_FADED_AQUA";
+        case GRUVBOX_FADED_ORANGE: return "GRUVBOX_FADED_ORANGE";
+        case GRUVBOX_DARK_RED_HARD: return "GRUVBOX_DARK_RED_HARD";
+        case GRUVBOX_DARK_RED: return "GRUVBOX_DARK_RED";
+        case GRUVBOX_DARK_RED_SOFT: return "GRUVBOX_DARK_RED_SOFT";
+        case GRUVBOX_LIGHT_RED_HARD: return "GRUVBOX_LIGHT_RED_HARD";
+        case GRUVBOX_LIGHT_RED: return "GRUVBOX_LIGHT_RED";
+        case GRUVBOX_LIGHT_RED_SOFT: return "GRUVBOX_LIGHT_RED_SOFT";
+        case GRUVBOX_DARK_GREEN_HARD: return "GRUVBOX_DARK_GREEN_HARD";
+        case GRUVBOX_DARK_GREEN: return "GRUVBOX_DARK_GREEN";
+        case GRUVBOX_DARK_GREEN_SOFT: return "GRUVBOX_DARK_GREEN_SOFT";
+        case GRUVBOX_LIGHT_GREEN_HARD: return "GRUVBOX_LIGHT_GREEN_HARD";
+        case GRUVBOX_LIGHT_GREEN: return "GRUVBOX_LIGHT_GREEN";
+        case GRUVBOX_LIGHT_GREEN_SOFT: return "GRUVBOX_LIGHT_GREEN_SOFT";
+        case GRUVBOX_DARK_AQUA_HARD: return "GRUVBOX_DARK_AQUA_HARD";
+        case GRUVBOX_DARK_AQUA: return "GRUVBOX_DARK_AQUA";
+        case GRUVBOX_DARK_AQUA_SOFT: return "GRUVBOX_DARK_AQUA_SOFT";
+        case GRUVBOX_LIGHT_AQUA_HARD: return "GRUVBOX_LIGHT_AQUA_HARD";
+        case GRUVBOX_LIGHT_AQUA: return "GRUVBOX_LIGHT_AQUA";
+        case GRUVBOX_LIGHT_AQUA_SOFT: return "GRUVBOX_LIGHT_AQUA_SOFT";
+        case GRUVBOX_GREY: return "GRUVBOX_GREY";
+        case GRUVBOX_NUM_COLORS: return "GRUVBOX_NUM_COLORS";
     }
     return "";
 }

@@ -21,12 +21,12 @@ int main(){
         BeginDrawing();
         ClearBackground(BLACK);
 
-        int grid_size = ceil(sqrt(NUM_COLORS));
+        int grid_size = ceil(sqrt(GRUVBOX_NUM_COLORS));
         int current_color = 0;
 
         for(int i = 0; i<grid_size; i++){
             for(int j = 0; j<grid_size; j++){
-                if(current_color<NUM_COLORS){
+                if(current_color<GRUVBOX_NUM_COLORS){
                     DrawRectangle(i*(WINDOW_WIDTH/grid_size),
                             j*(WINDOW_HEIGHT/grid_size),
                             WINDOW_WIDTH/grid_size,

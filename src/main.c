@@ -44,15 +44,15 @@ int main(){
 
     while(!WindowShouldClose()){
         BeginDrawing();
-        ClearBackground(Gruvbox[GREY]);
+        ClearBackground(Gruvbox[GRUVBOX_GREY]);
 
         float x = 0; // Starting x position (after the button)
         float y = 0;  // Starting y position
         float startX = x; // Remember the starting x for newlines
 
-        DrawTextContiguous(text1, &x, &y, startX, Gruvbox[BRIGHT_AQUA]);
-        DrawTextContiguous(text2, &x, &y, startX, Gruvbox[BRIGHT_AQUA]);
-        DrawTextContiguous(text3, &x, &y, startX, Gruvbox[BRIGHT_AQUA]);
+        DrawTextContiguous(text1, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+        DrawTextContiguous(text2, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+        DrawTextContiguous(text3, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
 
         EndDrawing();
     }
