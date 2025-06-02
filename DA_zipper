@@ -1,0 +1,15 @@
+#/bin/bash
+
+
+mkdir VZV
+
+cp -r src VZV/
+cp -r styles VZV/
+cp Makefile VZV/
+cp README.md VZV/
+
+cd VZV
+zip -r VZV_$1.zip .
+mv VZV_$1.zip ..
+cd ..
+rm -rf VZV
