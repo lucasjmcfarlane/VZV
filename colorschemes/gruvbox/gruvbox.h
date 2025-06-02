@@ -1,0 +1,69 @@
+#ifndef GRUVBOX_H
+#define GRUVBOX_H
+
+#include "raylib.h"
+#include <stdint.h>
+
+enum GruvboxColors{
+    DARK0_HARD,
+    DARK0,
+    DARK0_SOFT,
+    DARK1,
+    DARK2,
+    DARK3,
+    DARK4,
+    LIGHT0_HARD,
+    LIGHT0,
+    LIGHT0_SOFT,
+    LIGHT1,
+    LIGHT2,
+    LIGHT3,
+    LIGHT4,
+    BRIGHT_RED,
+    BRIGHT_GREEN,
+    BRIGHT_YELLOW,
+    BRIGHT_BLUE,
+    BRIGHT_PURPLE,
+    BRIGHT_AQUA,
+    BRIGHT_ORANGE,
+    NEUTRAL_RED,
+    NEUTRAL_GREEN,
+    NEUTRAL_YELLOW,
+    NEUTRAL_BLUE,
+    NEUTRAL_PURPLE,
+    NEUTRAL_AQUA,
+    NEUTRAL_ORANGE,
+    FADED_RED,
+    FADED_GREEN,
+    FADED_YELLOW,
+    FADED_BLUE,
+    FADED_PURPLE,
+    FADED_AQUA,
+    FADED_ORANGE,
+    DARK_RED_HARD,
+    DARK_RED,
+    DARK_RED_SOFT,
+    LIGHT_RED_HARD,
+    LIGHT_RED,
+    LIGHT_RED_SOFT,
+    DARK_GREEN_HARD,
+    DARK_GREEN,
+    DARK_GREEN_SOFT,
+    LIGHT_GREEN_HARD,
+    LIGHT_GREEN,
+    LIGHT_GREEN_SOFT,
+    DARK_AQUA_HARD,
+    DARK_AQUA,
+    DARK_AQUA_SOFT,
+    LIGHT_AQUA_HARD,
+    LIGHT_AQUA,
+    LIGHT_AQUA_SOFT,
+    GREY,
+    NUM_COLORS
+};
+
+char* GetColorName(int index);
+
+extern const Color Gruvbox[NUM_COLORS];
+
+#endif
