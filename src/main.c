@@ -39,6 +39,33 @@ void DrawTextContiguous(const char* text, float* x, float* y, float startX, Colo
     }
 }
 
+void DrawTextWithCyclingColors(const char* text, float* x, float* y, float startX){
+    if(text == NULL){
+        DrawTextContiguous("Failed to load text from file!", x, y, startX, WHITE);
+    }
+
+    int colorIndex = 0;
+    char word[512] = {'\0'};
+    int wordLength = 0;
+
+    for(int i = 0; text[i] != '\0'; i++){
+
+        // Add character to word
+        if(wordLength < sizeof(word) - 1){
+            word[wordLength++] = text[i];
+        }
+
+        // Handle whitespace (spaces, newlines, tabs, EOF) as word delimiters
+        if(text[i] == ' ' || text[i] == '\n' || text[i] == '\t' || text[i+1] == '\0'){
+            // Draw the completed word with the current color
+            word[wordLength] = '\0';
+            Color color = Gruvbox[colorIndex++ % GRUVBOX_NUM_COLORS];
+            DrawTextContiguous(word, x, y, startX, color);
+            wordLength = 0;
+        }
+    }
+}
+
 int main(){
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
     GuiSetStyle(DEFAULT, TEXT_SIZE, FONT_SIZE);
@@ -73,9 +100,14 @@ int main(){
             fileDialogState.windowActive = false;
         }
 
-        DrawTextContiguous(text1, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
-        DrawTextContiguous(text2, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
-        DrawTextContiguous(text3, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+        if(loadedText){
+            DrawTextWithCyclingColors(loadedText, &x, &y, startX);
+        }
+        else{
+            DrawTextContiguous(text1, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+            DrawTextContiguous(text2, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+            DrawTextContiguous(text3, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
+        }
 
         EndDrawing();
     }
