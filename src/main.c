@@ -1,8 +1,14 @@
 #include <raylib.h>
 #include <gruvbox.h>
+#include <stdio.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+
+#undef RAYGUI_IMPLEMENTATION // Avoid including raygui implementation again
+
+#define GUI_WINDOW_FILE_DIALOG_IMPLEMENTATION
+#include "gui_window_file_dialog.h"
 
 #define APPLICATION_NAME "VZV"
 #define WINDOW_WIDTH 1600
@@ -42,6 +48,12 @@ int main(){
     char* text2 = "Some more text. ";
     char* text3 = "This text should\nStart again from the beginning.";
 
+    char filePath[512] = "\0";
+    char* loadedText = NULL;
+    GuiWindowFileDialogState fileDialogState = InitGuiWindowFileDialog(GetWorkingDirectory());
+    fileDialogState.SelectFilePressed = false;
+    fileDialogState.windowActive = true;
+
     while(!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(Gruvbox[GRUVBOX_GREY]);
@@ -49,12 +61,28 @@ int main(){
         float x = 0; // Starting x position (after the button)
         float y = 0;  // Starting y position
         float startX = x; // Remember the starting x for newlines
+        
+        // Display the file dialog
+        GuiWindowFileDialog(&fileDialogState);
+
+        // Handle file dialog
+        if(fileDialogState.SelectFilePressed){
+            TextCopy(filePath, TextFormat("%s/%s", fileDialogState.dirPathText, fileDialogState.fileNameText));
+            loadedText = LoadFileText(filePath);
+            fileDialogState.SelectFilePressed = false;
+            fileDialogState.windowActive = false;
+        }
 
         DrawTextContiguous(text1, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
         DrawTextContiguous(text2, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
         DrawTextContiguous(text3, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA]);
 
         EndDrawing();
+    }
+
+    // Clean up
+    if(loadedText){
+        UnloadFileText(loadedText);
     }
 
     CloseWindow();
