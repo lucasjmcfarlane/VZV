@@ -59,6 +59,6 @@ enum GruvboxColors{
     GRUVBOX_NUM_COLORS
 };
 
-char* GetColorName(int index);
-
 extern const Color Gruvbox[GRUVBOX_NUM_COLORS];
+
+char* GetColorName(int index);

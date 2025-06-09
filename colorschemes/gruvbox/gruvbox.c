@@ -115,6 +115,5 @@ char* GetColorName(int index){
         case GRUVBOX_GREY: return "GRUVBOX_GREY";
         case GRUVBOX_NUM_COLORS: return "GRUVBOX_NUM_COLORS";
     }
-    return "";
+    return "NOT A COLOR";
 }
-
