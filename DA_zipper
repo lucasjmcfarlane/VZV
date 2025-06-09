@@ -4,6 +4,7 @@ mkdir VZV
 
 cp -r src VZV/
 cp -r colorschemes VZV/
+cp -r fonts VZV/
 cp build.zig VZV/
 cp build.zig.zon VZV/
 cp README.md VZV/
