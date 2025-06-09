@@ -16,7 +16,6 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(raylib);
 
     //---------------------------VZV---------------------------//
-    
     //define executable
     const vzv = b.addExecutable(.{
         .name = "vzv",
@@ -45,6 +44,7 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(vzv);
 
+    //create run step
     const run_vzv = b.addRunArtifact(vzv);
     run_vzv.step.dependOn(b.getInstallStep());
 
@@ -82,6 +82,7 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(palette);
 
+    //create run step
     const run_palette = b.addRunArtifact(palette);
     run_palette.step.dependOn(b.getInstallStep());
 
