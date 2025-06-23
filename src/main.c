@@ -33,10 +33,24 @@ int main(){
     InitFontManager(&fontManager);
 
     bool fontDropdownActive = false;
+
+    // Scrolling variables
+    float scrollY = 0.0f;
+    float maxScrollY = 0.0f;
+    float contentHeight = 0.0f;
+    float viewportHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - 10; // Available height for text
+    const float scrollSpeed = FONT_SIZE + TEXT_LINE_SPACING;
+    const int scrollbarWidth = 20;
     
+    while(!WindowShouldClose()){
+        // Handle scrolling input
+        float wheel = GetMouseWheelMove();
+        if (wheel != 0) {
+            scrollY -= wheel * scrollSpeed;
+            if (scrollY < 0) scrollY = 0;
+            if (scrollY > maxScrollY) scrollY = maxScrollY;
         }
 
-    while(!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(Gruvbox[GRUVBOX_GREY]);
 
@@ -50,8 +64,9 @@ int main(){
         }
 
         float x = 0; // Starting x position (after the button)
-        float y = TOOLBAR_HEIGHT + 5;  // Starting y position
+        float y = TOOLBAR_HEIGHT + 5 - scrollY;  // Apply scroll offset
         float startX = x; // Remember the starting x for newlines
+        float originalY = y; // Remember original Y to calculate content height
         
         // Display the file dialog
         GuiWindowFileDialog(&fileDialogState);
@@ -67,12 +82,67 @@ int main(){
         // Set the current font for drawing
         Font currentFont = fontManager.fonts[fontManager.currentFontIndex];
 
+        // Create a scissor rectangle to clip text rendering to the viewport
+        BeginScissorMode(0, TOOLBAR_HEIGHT, WINDOW_WIDTH - scrollbarWidth, viewportHeight);
+
         if(loadedText){
             int lineNumber = 0;
             DrawTextWithCyclingColors(loadedText, &x, &y, startX, &lineNumber, currentFont);
         }
         else{
             DrawTextContiguous(placeholderText, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA], -1, currentFont);
+        }
+
+        EndScissorMode();
+
+        // Calculate content height and max scroll
+        contentHeight = y - originalY;
+        maxScrollY = contentHeight > viewportHeight ? contentHeight - viewportHeight : 0;
+
+        // Draw scrollbar if content exceeds viewport
+        if (maxScrollY > 0) {
+            Rectangle scrollbarBg = { WINDOW_WIDTH - scrollbarWidth, TOOLBAR_HEIGHT, scrollbarWidth, viewportHeight };
+            DrawRectangleRec(scrollbarBg, Gruvbox[GRUVBOX_DARK2]);
+            
+            // Calculate scrollbar thumb size and position
+            float thumbHeight = (viewportHeight / contentHeight) * viewportHeight;
+            if (thumbHeight < 20) thumbHeight = 20; // Minimum thumb size
+            
+            float thumbY = TOOLBAR_HEIGHT + (scrollY / maxScrollY) * (viewportHeight - thumbHeight);
+            
+            Rectangle scrollbarThumb = { WINDOW_WIDTH - scrollbarWidth + 2, thumbY, scrollbarWidth - 4, thumbHeight };
+            DrawRectangleRec(scrollbarThumb, Gruvbox[GRUVBOX_BRIGHT_BLUE]);
+            
+            // Handle scrollbar dragging
+            static bool dragging = false;
+            static float dragOffset = 0;
+            
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mousePos = GetMousePosition();
+                if (CheckCollisionPointRec(mousePos, scrollbarThumb)) {
+                    dragging = true;
+                    dragOffset = mousePos.y - thumbY;
+                }
+            }
+            
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                dragging = false;
+            }
+            
+            if (dragging) {
+                Vector2 mousePos = GetMousePosition();
+                float newThumbY = mousePos.y - dragOffset;
+                
+                // Constrain thumb position
+                if (newThumbY < TOOLBAR_HEIGHT) newThumbY = TOOLBAR_HEIGHT;
+                if (newThumbY > TOOLBAR_HEIGHT + viewportHeight - thumbHeight) {
+                    newThumbY = TOOLBAR_HEIGHT + viewportHeight - thumbHeight;
+                }
+                
+                // Update scroll position based on thumb position
+                float thumbProgress = (newThumbY - TOOLBAR_HEIGHT) / (viewportHeight - thumbHeight);
+                scrollY = thumbProgress * maxScrollY;
+            }
         }
 
         EndDrawing();
