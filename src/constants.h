@@ -1,0 +1,11 @@
+#pragma once
+
+#define APPLICATION_NAME "VZV"
+#define WINDOW_WIDTH 1600
+#define WINDOW_HEIGHT 1000
+#define TARGET_FPS 60
+
+#define FONT_SIZE 25
+#define LINE_SPACING 5
+#define LINE_NUMBER_GAP 50
+#define TOOLBAR_HEIGHT 40
