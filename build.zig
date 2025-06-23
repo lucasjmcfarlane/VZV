@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
         .target=target,
         .optimize=optimize,
         .shared = true,
-        .linux_display_backend = .X11,
+        .linux_display_backend = .Both,
     });
     const raylib = raylib_dep.artifact("raylib");
     b.installArtifact(raylib);
@@ -33,6 +33,8 @@ pub fn build(b: *std.Build) void {
         .files = &.{
             "src/main.c",
             "colorschemes/gruvbox/gruvbox.c",
+            "src/font_manager.c",
+            "src/text_renderer.c",
         },
         .flags = &.{},
     });
