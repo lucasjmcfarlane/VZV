@@ -39,14 +39,12 @@ int main(){
     float maxScrollY = 0.0f;
     float contentHeight = 0.0f;
     float viewportHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - 10; // Available height for text
-    const float scrollSpeed = FONT_SIZE + TEXT_LINE_SPACING;
-    const int scrollbarWidth = 20;
     
     while(!WindowShouldClose()){
         // Handle scrolling input
         float wheel = GetMouseWheelMove();
         if (wheel != 0) {
-            scrollY -= wheel * scrollSpeed;
+            scrollY -= wheel * SCROLL_SPEED;
             if (scrollY < 0) scrollY = 0;
             if (scrollY > maxScrollY) scrollY = maxScrollY;
         }
@@ -83,7 +81,7 @@ int main(){
         Font currentFont = fontManager.fonts[fontManager.currentFontIndex];
 
         // Create a scissor rectangle to clip text rendering to the viewport
-        BeginScissorMode(0, TOOLBAR_HEIGHT, WINDOW_WIDTH - scrollbarWidth, viewportHeight);
+        BeginScissorMode(0, TOOLBAR_HEIGHT, WINDOW_WIDTH - SCROLLBAR_WIDTH, viewportHeight);
 
         if(loadedText){
             int lineNumber = 0;
@@ -101,7 +99,7 @@ int main(){
 
         // Draw scrollbar if content exceeds viewport
         if (maxScrollY > 0) {
-            Rectangle scrollbarBg = { WINDOW_WIDTH - scrollbarWidth, TOOLBAR_HEIGHT, scrollbarWidth, viewportHeight };
+            Rectangle scrollbarBg = { WINDOW_WIDTH - SCROLLBAR_WIDTH, TOOLBAR_HEIGHT, SCROLLBAR_WIDTH, viewportHeight };
             DrawRectangleRec(scrollbarBg, Gruvbox[GRUVBOX_DARK2]);
             
             // Calculate scrollbar thumb size and position
@@ -110,7 +108,7 @@ int main(){
             
             float thumbY = TOOLBAR_HEIGHT + (scrollY / maxScrollY) * (viewportHeight - thumbHeight);
             
-            Rectangle scrollbarThumb = { WINDOW_WIDTH - scrollbarWidth + 2, thumbY, scrollbarWidth - 4, thumbHeight };
+            Rectangle scrollbarThumb = { WINDOW_WIDTH - SCROLLBAR_WIDTH + 2, thumbY, SCROLLBAR_WIDTH - 4, thumbHeight };
             DrawRectangleRec(scrollbarThumb, Gruvbox[GRUVBOX_BRIGHT_BLUE]);
             
             // Handle scrollbar dragging
