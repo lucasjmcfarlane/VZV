@@ -34,19 +34,38 @@ int main(){
 
     bool fontDropdownActive = false;
 
+    // Text wrapping toggle
+    bool textWrapEnabled = true;
+
     // Scrolling variables
     float scrollY = 0.0f;
+    float scrollX = 0.0f;
     float maxScrollY = 0.0f;
+    float maxScrollX = 0.0f;
     float contentHeight = 0.0f;
-    float viewportHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - 10; // Available height for text
+    float contentWidth = 0.0f;
     
     while(!WindowShouldClose()){
+        bool showVerticalScrollbar = (maxScrollY > 0);
+        float viewportWidth = WINDOW_WIDTH - 10 - (showVerticalScrollbar ? SCROLLBAR_WIDTH : 0);
+
+        bool showHorizontalScrollbar = (maxScrollX > 0 && !textWrapEnabled);
+        float viewportHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - 10 - (showHorizontalScrollbar ? SCROLLBAR_WIDTH : 0);
+
         // Handle scrolling input
         float wheel = GetMouseWheelMove();
         if (wheel != 0) {
-            scrollY -= wheel * SCROLL_SPEED;
-            if (scrollY < 0) scrollY = 0;
-            if (scrollY > maxScrollY) scrollY = maxScrollY;
+            if (IsKeyDown(KEY_LEFT_SHIFT) && !textWrapEnabled) {
+                // Horizontal scrolling when shift is held and wrapping is off
+                scrollX -= wheel * HORIZONTAL_SCROLL_SPEED;
+                if (scrollX < 0) scrollX = 0;
+                if (scrollX > maxScrollX) scrollX = maxScrollX;
+            } else {
+                // Vertical scrolling
+                scrollY -= wheel * SCROLL_SPEED;
+                if (scrollY < 0) scrollY = 0;
+                if (scrollY > maxScrollY) scrollY = maxScrollY;
+            }
         }
 
         BeginDrawing();
@@ -55,16 +74,28 @@ int main(){
         // Draw toolbar
         DrawRectangle(0, 0, WINDOW_WIDTH, TOOLBAR_HEIGHT, Gruvbox[GRUVBOX_DARK1]);
 
+        // Text wrap toggle button
+        Rectangle wrapToggleRect = { 10, 5, 120, 30 };
+        if (GuiButton(wrapToggleRect, textWrapEnabled ? "Wrap: ON" : "Wrap: OFF")) {
+            textWrapEnabled = !textWrapEnabled;
+            // Reset horizontal scroll when enabling wrap
+            if (textWrapEnabled) {
+                scrollX = 0;
+                maxScrollX = 0;
+            }
+        }
+
         // Font dropdown (positioned on the right side)
         Rectangle fontDropdownRect = { WINDOW_WIDTH - 200, 5, 190, 30 };
         if (GuiDropdownBox(fontDropdownRect, fontManager.fontNames, &fontManager.currentFontIndex, fontDropdownActive)) {
             fontDropdownActive = !fontDropdownActive;
         }
 
-        float x = 0; // Starting x position (after the button)
-        float y = TOOLBAR_HEIGHT + 5 - scrollY;  // Apply scroll offset
+        float x = -scrollX; // Apply horizontal scroll offset
+        float y = TOOLBAR_HEIGHT + 5 - scrollY;  // Apply vertical scroll offset
         float startX = x; // Remember the starting x for newlines
         float originalY = y; // Remember original Y to calculate content height
+        float maxX = 0; // Track maximum X position for horizontal scrolling
         
         // Display the file dialog
         GuiWindowFileDialog(&fileDialogState);
@@ -81,65 +112,115 @@ int main(){
         Font currentFont = fontManager.fonts[fontManager.currentFontIndex];
 
         // Create a scissor rectangle to clip text rendering to the viewport
-        BeginScissorMode(0, TOOLBAR_HEIGHT, WINDOW_WIDTH - SCROLLBAR_WIDTH, viewportHeight);
+        BeginScissorMode(0, TOOLBAR_HEIGHT, viewportWidth, viewportHeight);
 
         if(loadedText){
             int lineNumber = 0;
-            DrawTextWithCyclingColors(loadedText, &x, &y, startX, &lineNumber, currentFont);
+            float wrapWidth = textWrapEnabled ? viewportWidth : 0; // 0 means no wrapping
+            DrawTextWithCyclingColors(loadedText, &x, &y, startX, &lineNumber, currentFont, textWrapEnabled, wrapWidth, &maxX);
         }
         else{
-            DrawTextContiguous(placeholderText, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA], -1, currentFont);
+            float wrapWidth = textWrapEnabled ? viewportWidth : 0;
+            DrawTextContiguous(placeholderText, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA], -1, currentFont, textWrapEnabled, wrapWidth, &maxX);
         }
 
         EndScissorMode();
 
-        // Calculate content height and max scroll
+        // Calculate content dimensions and max scroll
         contentHeight = y - originalY;
+        contentWidth = maxX + scrollX;
         maxScrollY = contentHeight > viewportHeight ? contentHeight - viewportHeight : 0;
+        maxScrollX = (!textWrapEnabled && contentWidth > viewportWidth) ? contentWidth - viewportWidth : 0;
 
-        // Draw scrollbar if content exceeds viewport
+        // Draw vertical scrollbar if content exceeds viewport
         if (maxScrollY > 0) {
-            Rectangle scrollbarBg = { WINDOW_WIDTH - SCROLLBAR_WIDTH, TOOLBAR_HEIGHT, SCROLLBAR_WIDTH, viewportHeight };
+            Rectangle scrollbarBg = { WINDOW_WIDTH - SCROLLBAR_WIDTH, TOOLBAR_HEIGHT, SCROLLBAR_WIDTH, viewportHeight - (maxScrollX > 0 ? SCROLLBAR_WIDTH : 0) };
             DrawRectangleRec(scrollbarBg, Gruvbox[GRUVBOX_DARK2]);
             
             // Calculate scrollbar thumb size and position
-            float thumbHeight = (viewportHeight / contentHeight) * viewportHeight;
+            float thumbHeight = (viewportHeight / contentHeight) * scrollbarBg.height;
             if (thumbHeight < 20) thumbHeight = 20; // Minimum thumb size
             
-            float thumbY = TOOLBAR_HEIGHT + (scrollY / maxScrollY) * (viewportHeight - thumbHeight);
+            float thumbY = TOOLBAR_HEIGHT + (scrollY / maxScrollY) * (scrollbarBg.height - thumbHeight);
             
             Rectangle scrollbarThumb = { WINDOW_WIDTH - SCROLLBAR_WIDTH + 2, thumbY, SCROLLBAR_WIDTH - 4, thumbHeight };
             DrawRectangleRec(scrollbarThumb, Gruvbox[GRUVBOX_BRIGHT_BLUE]);
             
-            // Handle scrollbar dragging
-            static bool dragging = false;
-            static float dragOffset = 0;
+            // Handle vertical scrollbar dragging
+            static bool draggingVertical = false;
+            static float dragOffsetVertical = 0;
             
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 Vector2 mousePos = GetMousePosition();
                 if (CheckCollisionPointRec(mousePos, scrollbarThumb)) {
-                    dragging = true;
-                    dragOffset = mousePos.y - thumbY;
+                    draggingVertical = true;
+                    dragOffsetVertical = mousePos.y - thumbY;
                 }
             }
             
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-                dragging = false;
+                draggingVertical = false;
             }
             
-            if (dragging) {
+            if (draggingVertical) {
                 Vector2 mousePos = GetMousePosition();
-                float newThumbY = mousePos.y - dragOffset;
+                float newThumbY = mousePos.y - dragOffsetVertical;
                 
                 // Constrain thumb position
                 if (newThumbY < TOOLBAR_HEIGHT) newThumbY = TOOLBAR_HEIGHT;
-                if (newThumbY > TOOLBAR_HEIGHT + viewportHeight - thumbHeight) {
-                    newThumbY = TOOLBAR_HEIGHT + viewportHeight - thumbHeight;
+                if (newThumbY > TOOLBAR_HEIGHT + scrollbarBg.height - thumbHeight) {
+                    newThumbY = TOOLBAR_HEIGHT + scrollbarBg.height - thumbHeight;
                 }
                 
                 // Update scroll position based on thumb position
-                float thumbProgress = (newThumbY - TOOLBAR_HEIGHT) / (viewportHeight - thumbHeight);
+                float thumbProgress = (newThumbY - TOOLBAR_HEIGHT) / (scrollbarBg.height - thumbHeight);
                 scrollY = thumbProgress * maxScrollY;
+            }
+        }
+
+        // Draw horizontal scrollbar if content exceeds viewport and wrapping is off
+        if (maxScrollX > 0 && !textWrapEnabled) {
+            Rectangle hScrollbarBg = { 0, WINDOW_HEIGHT - SCROLLBAR_WIDTH, WINDOW_WIDTH - (maxScrollY > 0 ? SCROLLBAR_WIDTH : 0), SCROLLBAR_WIDTH };
+            DrawRectangleRec(hScrollbarBg, Gruvbox[GRUVBOX_DARK2]);
+            
+            // Calculate horizontal scrollbar thumb size and position
+            float thumbWidth = (viewportWidth / contentWidth) * hScrollbarBg.width;
+            if (thumbWidth < 20) thumbWidth = 20; // Minimum thumb size
+            
+            float thumbX = (scrollX / maxScrollX) * (hScrollbarBg.width - thumbWidth);
+            
+            Rectangle hScrollbarThumb = { thumbX, WINDOW_HEIGHT - SCROLLBAR_WIDTH + 2, thumbWidth, SCROLLBAR_WIDTH - 4 };
+            DrawRectangleRec(hScrollbarThumb, Gruvbox[GRUVBOX_BRIGHT_BLUE]);
+            
+            // Handle horizontal scrollbar dragging
+            static bool draggingHorizontal = false;
+            static float dragOffsetHorizontal = 0;
+            
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mousePos = GetMousePosition();
+                if (CheckCollisionPointRec(mousePos, hScrollbarThumb)) {
+                    draggingHorizontal = true;
+                    dragOffsetHorizontal = mousePos.x - thumbX;
+                }
+            }
+            
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                draggingHorizontal = false;
+            }
+            
+            if (draggingHorizontal) {
+                Vector2 mousePos = GetMousePosition();
+                float newThumbX = mousePos.x - dragOffsetHorizontal;
+                
+                // Constrain thumb position
+                if (newThumbX < 0) newThumbX = 0;
+                if (newThumbX > hScrollbarBg.width - thumbWidth) {
+                    newThumbX = hScrollbarBg.width - thumbWidth;
+                }
+                
+                // Update scroll position based on thumb position
+                float thumbProgress = newThumbX / (hScrollbarBg.width - thumbWidth);
+                scrollX = thumbProgress * maxScrollX;
             }
         }
 

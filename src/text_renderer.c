@@ -13,7 +13,7 @@ void DrawLineNumber(int lineNumber, float* x, float y, Color color, Font font){
 }
 
 // Render text contiguously across multiple calls to the function
-int DrawTextContiguous(const char* text, float* x, float* y, float startX, Color color, int lineNumber, Font font){
+int DrawTextContiguous(const char* text, float* x, float* y, float startX, Color color, int lineNumber, Font font, bool wrapText, float maxWidth, float* maxX){
     if(text == NULL) return lineNumber;
 
     char buffer[1024];
@@ -28,7 +28,26 @@ int DrawTextContiguous(const char* text, float* x, float* y, float startX, Color
 
         if(text[i] == '\n' || text[i] == '\0'){
             buffer[bufferIndex] = '\0';
+            
+            // Check if we need to wrap text
+            if(wrapText && maxWidth > 0){
+                float textWidth = MeasureTextEx(font, buffer, FONT_SIZE, 1).x;
+                if(*x + textWidth > maxWidth && bufferIndex > 0){
+                    // Wrap to next line
+                    *x = startX;
+                    *y += FONT_SIZE + LINE_SPACING;
+                    if(lineNumber != -1){
+                        DrawLineNumber(lineNumber, x, *y, BLACK, font);
+                    }
+                }
+            }
+            
             DrawTextEx(font, buffer, (Vector2){*x, *y}, FONT_SIZE, 1, color);  // Replace DrawText with DrawTextEx
+            float textWidth = MeasureTextEx(font, buffer, FONT_SIZE, 1).x;
+            *x += textWidth;
+            
+            // Update maximum X position for horizontal scrolling
+            if(maxX && *x > *maxX) *maxX = *x;
 
             if(text[i] == '\n'){
                 *x = startX;
@@ -39,13 +58,10 @@ int DrawTextContiguous(const char* text, float* x, float* y, float startX, Color
                 }
                 bufferIndex = 0;
             }
-
             else{
-                *x += MeasureTextEx(font, buffer, FONT_SIZE, 1).x;  // Replace MeasureText with MeasureTextEx
                 break;
             }
         }
-
         else{
             if(bufferIndex < sizeof(buffer) - 1){
                 buffer[bufferIndex++] = text[i];
@@ -56,9 +72,9 @@ int DrawTextContiguous(const char* text, float* x, float* y, float startX, Color
 }
 
 // Update DrawTextWithCyclingColors to accept Font and pass it to DrawTextContiguous
-void DrawTextWithCyclingColors(const char* text, float* x, float* y, float startX, int* lineNumber, Font font){
+void DrawTextWithCyclingColors(const char* text, float* x, float* y, float startX, int* lineNumber, Font font, bool wrapText, float maxWidth, float* maxX){
     if(text == NULL){
-        DrawTextContiguous("Failed to load text from file!", x, y, startX, WHITE, -1, font);  // Pass font
+        DrawTextContiguous("Failed to load text from file!", x, y, startX, WHITE, -1, font, wrapText, maxWidth, maxX);  // Pass font
         return;  // Early return for clarity
     }
 
@@ -78,7 +94,7 @@ void DrawTextWithCyclingColors(const char* text, float* x, float* y, float start
             // Draw the completed word with the current color
             word[wordLength] = '\0';
             Color color = Gruvbox[colorIndex++ % GRUVBOX_NUM_COLORS];
-            *lineNumber = DrawTextContiguous(word, x, y, startX, color, *lineNumber, font);
+            *lineNumber = DrawTextContiguous(word, x, y, startX, color, *lineNumber, font, wrapText, maxWidth, maxX);
             wordLength = 0;
         }
     }
