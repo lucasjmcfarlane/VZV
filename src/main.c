@@ -57,7 +57,7 @@ int main(){
         if (wheel != 0) {
             if (IsKeyDown(KEY_LEFT_SHIFT) && !textWrapEnabled) {
                 // Horizontal scrolling when shift is held and wrapping is off
-                scrollX -= wheel * HORIZONTAL_SCROLL_SPEED;
+                scrollX -= wheel * SCROLL_SPEED;
                 if (scrollX < 0) scrollX = 0;
                 if (scrollX > maxScrollX) scrollX = maxScrollX;
             } else {
