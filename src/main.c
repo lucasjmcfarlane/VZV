@@ -17,10 +17,10 @@
 
 int main(){
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, FONT_SIZE);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, FONT_SIZE);//set font size
     SetTargetFPS(TARGET_FPS);
 
-    char* placeholderText = "Open a file to get started...";
+    const char* placeholderText = "Open a file to get started...";
 
     char filePath[512] = "\0";
     char* loadedText = NULL;
