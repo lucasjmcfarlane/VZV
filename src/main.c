@@ -109,8 +109,14 @@ int main(){
         // Draw toolbar
         DrawRectangle(0, 0, WINDOW_WIDTH, TOOLBAR_HEIGHT, Gruvbox[GRUVBOX_DARK1]);
 
+        // Open file button
+        Rectangle openFileRect = { 10, 5, 80, 30 };
+        if (GuiButton(openFileRect, "Open File")) {
+            ShowFileDialog(&fileDialogManager);
+        }
+
         // Text wrap toggle button
-        Rectangle wrapToggleRect = { 10, 5, 120, 30 };
+        Rectangle wrapToggleRect = { 100, 5, 120, 30 };
         if (GuiButton(wrapToggleRect, textWrapEnabled ? "Wrap: ON" : "Wrap: OFF")) {
             textWrapEnabled = !textWrapEnabled;
             // Reset horizontal scroll when enabling wrap
