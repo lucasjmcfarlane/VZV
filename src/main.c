@@ -1,19 +1,15 @@
 #include <raylib.h>
-#include <stdio.h>
 #include <dirent.h>
-#include <string.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #undef RAYGUI_IMPLEMENTATION // Avoid including raygui implementation again
 
-#define GUI_WINDOW_FILE_DIALOG_IMPLEMENTATION
-#include "gui_window_file_dialog.h"
-
 #include "gruvbox.h"
 #include "constants.h"
 #include "font_manager.h"
 #include "text_renderer.h"
+#include "file_dialog_manager.h"
 
 int main(){
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
@@ -22,11 +18,9 @@ int main(){
 
     const char* placeholderText = "Open a file to get started...";
 
-    char filePath[512] = "\0";
-    char* loadedText = NULL;
-    GuiWindowFileDialogState fileDialogState = InitGuiWindowFileDialog(GetWorkingDirectory());
-    fileDialogState.SelectFilePressed = false;
-    fileDialogState.windowActive = true;
+    // File dialog manager
+    FileDialogManager fileDialogManager;
+    InitFileDialogManager(&fileDialogManager);
 
     // Font handling
     FontManager fontManager;
@@ -78,15 +72,14 @@ int main(){
         float originalY = y; // Remember original Y to calculate content height
         float maxX = 0; // Track maximum X position for horizontal scrolling
         
-        // Display the file dialog
-        GuiWindowFileDialog(&fileDialogState);
+        // Update file dialog
+        UpdateFileDialog(&fileDialogManager);
 
-        // Handle file dialog
-        if(fileDialogState.SelectFilePressed){
-            TextCopy(filePath, TextFormat("%s/%s", fileDialogState.dirPathText, fileDialogState.fileNameText));
-            loadedText = LoadFileText(filePath);
-            fileDialogState.SelectFilePressed = false;
-            fileDialogState.windowActive = false;
+        // Check if a new file was selected
+        if (IsFileSelected(&fileDialogManager)) {
+            // Reset scroll position when a new file is loaded
+            scrollY = 0.0f;
+            scrollX = 0.0f;
         }
 
         // Set the current font for drawing
@@ -95,6 +88,7 @@ int main(){
         // Create a scissor rectangle to clip text rendering to the viewport
         BeginScissorMode(NUMBER_LINE_WIDTH, TOOLBAR_HEIGHT, viewportWidth, viewportHeight);
 
+        char* loadedText = GetLoadedText(&fileDialogManager);
         if(loadedText){
             int lineNumber = 0;
             float wrapWidth = textWrapEnabled ? viewportWidth : 0; // 0 means no wrapping
@@ -237,10 +231,7 @@ int main(){
     }
 
     // Clean up
-    if(loadedText){
-        UnloadFileText(loadedText);
-    }
-
+    UnloadFileDialogManager(&fileDialogManager);
     UnloadFontManager(&fontManager);
 
     CloseWindow();
