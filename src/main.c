@@ -40,6 +40,11 @@ int main(){
     float contentWidth = 0.0f;
     
     while(!WindowShouldClose()){
+        // Handle keyboard shortcuts
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_O)) {
+            ShowFileDialog(&fileDialogManager);
+        }
+
         bool showVerticalScrollbar = (maxScrollY > 0);
         float viewportWidth = WINDOW_WIDTH - NUMBER_LINE_WIDTH - 10 - (showVerticalScrollbar ? SCROLLBAR_WIDTH : 0);
 
