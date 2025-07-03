@@ -35,6 +35,9 @@ pub fn build(b: *std.Build) void {
             "colorschemes/gruvbox/gruvbox.c",
             "src/font_manager.c",
             "src/text_renderer.c",
+            "src/file_dialog_manager.c",
+            "src/gui_window_file_dialog.c",
+            "src/scroll_manager.c",
         },
         .flags = &.{},
     });

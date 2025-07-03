@@ -1,6 +1,4 @@
-// src/file_dialog_manager.h
-#ifndef FILE_DIALOG_MANAGER_H
-#define FILE_DIALOG_MANAGER_H
+#pragma once
 
 #include "gui_window_file_dialog.h"
 
@@ -31,5 +29,3 @@ void ShowFileDialog(FileDialogManager* manager);
 
 // Clean up resources
 void UnloadFileDialogManager(FileDialogManager* manager);
-
-#endif // FILE_DIALOG_MANAGER_H

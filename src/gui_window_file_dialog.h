@@ -1,4 +1,5 @@
 //ALTERED VERSION
+#pragma once
 
 /*******************************************************************************************
 *
@@ -38,19 +39,7 @@
 *     3. This notice may not be removed or altered from any source distribution.
 *
 **********************************************************************************************/
-
-#ifndef GUI_WINDOW_FILE_DIALOG_H
-#define GUI_WINDOW_FILE_DIALOG_H
-
 #include "raylib.h"
-
-#ifdef __cplusplus
-extern "C" {            // Prevents name mangling of functions
-#endif
-
-//----------------------------------------------------------------------------------
-// Types and Structures Definition
-//----------------------------------------------------------------------------------
 
 // Gui file dialog context data
 typedef struct {
@@ -88,14 +77,6 @@ typedef struct {
 
 } GuiWindowFileDialogState;
 
-//----------------------------------------------------------------------------------
 // Module Functions Declaration
-//----------------------------------------------------------------------------------
 GuiWindowFileDialogState InitGuiWindowFileDialog(const char *initPath);
 void GuiWindowFileDialog(GuiWindowFileDialogState *state);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // GUI_WINDOW_FILE_DIALOG_H

@@ -1,6 +1,6 @@
+//for user configurable constants
 #pragma once
 
-#define APPLICATION_NAME "VZV"
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 1000
 #define TARGET_FPS 60
@@ -12,4 +12,4 @@
 #define TOOLBAR_HEIGHT 40
 #define SCROLLBAR_WIDTH 20
 
-#define SCROLL_SPEED (FONT_SIZE + LINE_SPACING)
+#define SCROLL_SPEED 40

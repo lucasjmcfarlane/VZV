@@ -1,6 +1,6 @@
 #include "text_renderer.h"
 #include "gruvbox.h"
-#include "constants.h" // For FONT_SIZE, LINE_SPACING, LINE_NUMBER_GAP
+#include "constants.h"
 #include "raylib.h"
 
 #include <stdio.h>

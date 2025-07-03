@@ -1,4 +1,3 @@
-// src/file_dialog_manager.c
 #include "file_dialog_manager.h"
 #include <string.h>
 

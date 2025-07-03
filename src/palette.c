@@ -4,13 +4,11 @@
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+#undef RAYGUI_IMPLEMENTATION // Avoid including raygui implementation again
+
+#include "constants.h"
 
 #define APPLICATION_NAME "Palette"
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 1000
-#define FONT_SIZE 18
-#define LINE_SPACING 5
-#define TARGET_FPS 1
 
 int main(){
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
