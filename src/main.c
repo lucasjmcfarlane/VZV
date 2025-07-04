@@ -116,11 +116,9 @@ int main(){
             textWrapEnabled = !textWrapEnabled;
         }
 
-        //font dropdown
+        //custom font dropdown
         Rectangle fontDropdownRect = { WINDOW_WIDTH - 200, 5, 190, 30 };
-        if (GuiDropdownBox(fontDropdownRect, fontManager.fontNames, &fontManager.currentFontIndex, fontDropdownOpen)) {
-            fontDropdownOpen = !fontDropdownOpen;
-        }
+        DrawCustomFontDropdown(fontDropdownRect, &fontManager, &fontDropdownOpen);
 
         //background color button
         Rectangle bgColorRect = {WINDOW_WIDTH - 400, 5, 90, 30};
