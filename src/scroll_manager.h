@@ -1,6 +1,4 @@
-// src/scroll_manager.h
-#ifndef SCROLL_MANAGER_H
-#define SCROLL_MANAGER_H
+#pragma once
 
 #include <raylib.h>
 #include <stdbool.h>
@@ -39,5 +37,3 @@ void DrawScrollbars(ScrollManager* manager, float viewportWidth, float viewportH
 
 // Get current scroll offsets
 Vector2 GetScrollOffset(const ScrollManager* manager);
-
-#endif // SCROLL_MANAGER_H

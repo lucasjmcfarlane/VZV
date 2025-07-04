@@ -1,10 +1,9 @@
-// src/main.c
 #include <raylib.h>
 #include <dirent.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-#undef RAYGUI_IMPLEMENTATION // Avoid including raygui implementation again
+#undef RAYGUI_IMPLEMENTATION //don't include raygui implementation again anywhere else
 
 #include "gruvbox.h"
 #include "constants.h"
@@ -12,61 +11,73 @@
 #include "text_renderer.h"
 #include "file_dialog_manager.h"
 #include "scroll_manager.h"
+#include "palette.h"
 
-#define APPLICATION_NAME "VZV"
+enum{
+    CHANGE_BACKGROUND_COLOR,
+    CHANGE_FONT_COLOR,
+};
+
 
 int main(){
+    bool fontDropdownOpen = false;
+    bool textWrapEnabled = false;
+    bool paletteOpen = false;
+
+    int currentBackgroundIndex = DEFAULT_BACKGROUND_COLOR;
+    int currentFontColorIndex = DEFAULT_FONT_COLOR;
+    int paletteMode = CHANGE_BACKGROUND_COLOR;
+
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, FONT_SIZE);//set font size
-    SetTargetFPS(TARGET_FPS);
 
-    const char* placeholderText = "Open a file to get started...";
-
-    // File dialog manager
     FileDialogManager fileDialogManager;
     InitFileDialogManager(&fileDialogManager);
 
-    // Font manager
     FontManager fontManager;
     InitFontManager(&fontManager);
 
-    // Scroll manager
     ScrollManager scrollManager;
     InitScrollManager(&scrollManager);
 
-    //font dropdown toggle
-    bool fontDropdownActive = false;
-
-    // Text wrapping toggle
-    bool textWrapEnabled = true;
-    
     while(!WindowShouldClose()){
-        // Handle keyboard shortcuts
+
+        //-------------------------------------------------------------KEYBOARD SHORTCUTS---------------------------------------
+        //open file picker
         if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_O)) {
             ShowFileDialog(&fileDialogManager);
         }
 
+        //close the app
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Q)) {
+            break;
+        }
+
+        //-------------------------------------------------------------CALCULATIONS---------------------------------------------
+        //determine if scrollbars should be shown
         bool showVerticalScrollbar = (scrollManager.maxScrollY > 0);
-        float viewportWidth = WINDOW_WIDTH - NUMBER_LINE_WIDTH - 10 - (showVerticalScrollbar ? SCROLLBAR_WIDTH : 0);
-
         bool showHorizontalScrollbar = (scrollManager.maxScrollX > 0 && !textWrapEnabled);
-        float viewportHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - 10 - (showHorizontalScrollbar ? SCROLLBAR_WIDTH : 0);
 
-        // Handle scrolling input
-        HandleScrollInput(&scrollManager, textWrapEnabled, viewportWidth, viewportHeight);
+        //calculate size of the textbox
+        float textboxWidth = WINDOW_WIDTH - NUMBER_LINE_WIDTH - (showVerticalScrollbar ? SCROLLBAR_WIDTH : 0);
+        float textboxHeight = WINDOW_HEIGHT - TOOLBAR_HEIGHT - (showHorizontalScrollbar ? SCROLLBAR_WIDTH : 0);
 
-        BeginDrawing();
-        ClearBackground(Gruvbox[GRUVBOX_GREY]);
-
+        //get current scroll offset
+        HandleScrollInput(&scrollManager, textWrapEnabled, textboxWidth, textboxHeight);
         Vector2 scrollOffset = GetScrollOffset(&scrollManager);
-        float x = scrollOffset.x; // Apply horizontal scroll offset
-        float y = TOOLBAR_HEIGHT + 5 + scrollOffset.y;  // Apply vertical scroll offset
-        float startX = x; // Remember the starting x for newlines
-        float originalY = y; // Remember original Y to calculate content height
-        float maxX = 0; // Track maximum X position for horizontal scrolling
+
+        //starting x pos of text content
+        float x = scrollOffset.x;
+        //starting y pos of text content
+        float y = TOOLBAR_HEIGHT + scrollOffset.y;
+        //keep for resetting newlines to the correct x pos
+        const float startX = x;
+        //keep for calculating total content length
+        const float startY = y;
+        //length of the text content 
+        float maxX = 0;
         
-        // Update file dialog
-        UpdateFileDialog(&fileDialogManager);
+        // Set the current font
+        Font currentFont = fontManager.fonts[fontManager.currentFontIndex];
 
         // Check if a new file was selected
         if (IsFileSelected(&fileDialogManager)) {
@@ -74,53 +85,80 @@ int main(){
             ResetScrollPosition(&scrollManager);
         }
 
-        // Set the current font for drawing
-        Font currentFont = fontManager.fonts[fontManager.currentFontIndex];
+        //-------------------------------------------------------------DRAW TEXT------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Gruvbox[currentBackgroundIndex]);
 
-        // Create a scissor rectangle to clip text rendering to the viewport
-        BeginScissorMode(NUMBER_LINE_WIDTH, TOOLBAR_HEIGHT, viewportWidth, viewportHeight);
+        //clip text rendering to the textbox
+        BeginScissorMode(NUMBER_LINE_WIDTH, TOOLBAR_HEIGHT, textboxWidth, textboxHeight);
 
         char* loadedText = GetLoadedText(&fileDialogManager);
         if(loadedText){
-            int lineNumber = 0;
-            float wrapWidth = textWrapEnabled ? viewportWidth : 0; // 0 means no wrapping
-            DrawTextWithCyclingColors(loadedText, &x, &y, startX, &lineNumber, currentFont, textWrapEnabled, wrapWidth, &maxX, viewportWidth, viewportHeight);
+            float wrapWidth = textWrapEnabled ? textboxWidth : 0; // 0 means no wrapping
+            DrawTextContiguous(loadedText, &x, &y, startX, Gruvbox[currentFontColorIndex], 0, currentFont, textWrapEnabled, wrapWidth, &maxX, textboxWidth, textboxHeight);
         }
         else{
-            float wrapWidth = textWrapEnabled ? viewportWidth : 0;
-            DrawTextContiguous(placeholderText, &x, &y, startX, Gruvbox[GRUVBOX_BRIGHT_AQUA], -1, currentFont, textWrapEnabled, wrapWidth, &maxX, viewportWidth, viewportHeight);
+            DrawTextContiguous(PLACEHOLDER_TEXT, &x, &y, startX, Gruvbox[currentFontColorIndex], -1, currentFont, textWrapEnabled, 0, &maxX, textboxWidth, textboxHeight);
         }
 
         EndScissorMode();
 
-        // Draw toolbar
+        //-------------------------------------------------------------DRAW UI--------------------------------------------------
+        //toolbar rectangle
         DrawRectangle(0, 0, WINDOW_WIDTH, TOOLBAR_HEIGHT, Gruvbox[GRUVBOX_DARK1]);
 
-        // Open file button
+        //open file button
         Rectangle openFileRect = { 10, 5, 80, 30 };
         if (GuiButton(openFileRect, "Open File")) {
             ShowFileDialog(&fileDialogManager);
         }
 
-        // Text wrap toggle button
+        //text wrap toggle button
         Rectangle wrapToggleRect = { 100, 5, 120, 30 };
         if (GuiButton(wrapToggleRect, textWrapEnabled ? "Wrap: ON" : "Wrap: OFF")) {
             textWrapEnabled = !textWrapEnabled;
         }
 
-        // Font dropdown (positioned on the right side)
+        //font dropdown
         Rectangle fontDropdownRect = { WINDOW_WIDTH - 200, 5, 190, 30 };
-        if (GuiDropdownBox(fontDropdownRect, fontManager.fontNames, &fontManager.currentFontIndex, fontDropdownActive)) {
-            fontDropdownActive = !fontDropdownActive;
+        if (GuiDropdownBox(fontDropdownRect, fontManager.fontNames, &fontManager.currentFontIndex, fontDropdownOpen)) {
+            fontDropdownOpen = !fontDropdownOpen;
         }
 
-        // Update scroll bounds based on content dimensions
-        float contentHeight = y - originalY;
-        float contentWidth = maxX - scrollOffset.x;
-        UpdateScrollBounds(&scrollManager, contentHeight, contentWidth, viewportWidth, viewportHeight, textWrapEnabled);
+        //background color button
+        Rectangle bgColorRect = {WINDOW_WIDTH - 400, 5, 90, 30};
+        if (GuiButton(bgColorRect, "Background")) {
+            paletteOpen = true;
+            paletteMode = 0;
+        }
 
-        // Draw scrollbars
-        DrawScrollbars(&scrollManager, viewportWidth, viewportHeight, TOOLBAR_HEIGHT, NUMBER_LINE_WIDTH, SCROLLBAR_WIDTH);
+        //font color button
+        Rectangle fontColorRect = {WINDOW_WIDTH - 300, 5, 90, 30};
+        if (GuiButton(fontColorRect, "Font Color")) {
+            paletteOpen = true;
+            paletteMode = 1;
+        }
+
+        //palette
+        if(paletteOpen){
+            if(paletteMode == 0){
+                int newColor = Palette("Choose Background Color...");
+                currentBackgroundIndex = newColor > -1 ? newColor : currentBackgroundIndex;
+                paletteOpen = newColor != -1 ? false : true;
+            }
+            else if (paletteMode == 1){
+                int newColor = Palette("Choose Font Color...");
+                currentFontColorIndex = newColor > -1 ? newColor : currentFontColorIndex;
+                paletteOpen = newColor != -1 ? false : true;
+            }
+        }
+
+        //scrollbars
+        UpdateScrollBounds(&scrollManager, y-startY, maxX-startX, textboxWidth, textboxHeight, textWrapEnabled);
+        DrawScrollbars(&scrollManager, textboxWidth, textboxHeight, TOOLBAR_HEIGHT, NUMBER_LINE_WIDTH, SCROLLBAR_WIDTH);
+
+        //file dialog
+        UpdateFileDialog(&fileDialogManager);
 
         EndDrawing();
     }
@@ -128,7 +166,6 @@ int main(){
     // Clean up
     UnloadFileDialogManager(&fileDialogManager);
     UnloadFontManager(&fontManager);
-
     CloseWindow();
     return 0;
 }

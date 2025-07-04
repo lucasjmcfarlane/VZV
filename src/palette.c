@@ -2,46 +2,61 @@
 #include <gruvbox.h>
 #include <math.h>
 
-#define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-#undef RAYGUI_IMPLEMENTATION // Avoid including raygui implementation again
-
 #include "constants.h"
 
-#define APPLICATION_NAME "Palette"
+// Function to draw color palette picker
+int Palette(const char* title) {
 
-int main(){
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_NAME);
-    GuiSetStyle(DEFAULT, TEXT_SIZE, FONT_SIZE);
-    SetTargetFPS(TARGET_FPS);
+    // Semi-transparent overlay
+    DrawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, (Color){0, 0, 0, 128});
 
-    while(!WindowShouldClose()){
-        BeginDrawing();
-        ClearBackground(BLACK);
+    // Palette window
+    int paletteWidth = 400;
+    int paletteHeight = 300;
+    int paletteX = (WINDOW_WIDTH - paletteWidth) / 2;
+    int paletteY = (WINDOW_HEIGHT - paletteHeight) / 2;
 
-        int grid_size = ceil(sqrt(GRUVBOX_NUM_COLORS));
-        int current_color = 0;
+    DrawRectangle(paletteX, paletteY, paletteWidth, paletteHeight, Gruvbox[GRUVBOX_DARK1]);
+    DrawRectangleLines(paletteX, paletteY, paletteWidth, paletteHeight, Gruvbox[GRUVBOX_LIGHT1]);
 
-        for(int i = 0; i<grid_size; i++){
-            for(int j = 0; j<grid_size; j++){
-                if(current_color<GRUVBOX_NUM_COLORS){
-                    DrawRectangle(i*(WINDOW_WIDTH/grid_size),
-                            j*(WINDOW_HEIGHT/grid_size),
-                            WINDOW_WIDTH/grid_size,
-                            WINDOW_HEIGHT/grid_size,
-                            Gruvbox[current_color]);
+    // Title
+    DrawTextEx(GetFontDefault(), title, (Vector2){paletteX + 10, paletteY + 10}, 20, 1, Gruvbox[GRUVBOX_LIGHT1]);
 
-                    DrawText(GetColorName(current_color), i*(WINDOW_WIDTH/grid_size), j*(WINDOW_HEIGHT/grid_size), FONT_SIZE,
-                            (Color){255-Gruvbox[current_color].r, 255-Gruvbox[current_color].g ,255-Gruvbox[current_color].b, 255});
+    // Color grid
+    int grid_size = ceil(sqrt(GRUVBOX_NUM_COLORS));
+    int colorWidth = (paletteWidth - 40) / grid_size;
+    int colorHeight = (paletteHeight - 80) / grid_size;
+    int currentColor = 0;
 
-                    current_color++;
+    for(int i = 0; i < grid_size; i++){
+        for(int j = 0; j < grid_size; j++){
+            if(currentColor < GRUVBOX_NUM_COLORS){
+                Rectangle colorRect = {
+                    paletteX + 20 + i * colorWidth,
+                    paletteY + 40 + j * colorHeight,
+                    colorWidth - 2,
+                    colorHeight - 2
+                };
+
+                DrawRectangleRec(colorRect, Gruvbox[currentColor]);
+                DrawRectangleLinesEx(colorRect, 1, Gruvbox[GRUVBOX_LIGHT1]);
+
+                // Check for click
+                if (CheckCollisionPointRec(GetMousePosition(), colorRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    return currentColor;
                 }
+
+                currentColor++;
             }
         }
-
-        EndDrawing();
     }
 
-    CloseWindow();
-    return 0;
+    // Close button
+    Rectangle closeRect = {paletteX + paletteWidth - 60, paletteY + 10, 50, 25};
+    if (GuiButton(closeRect, "Close")) {
+        return -2;
+    }
+
+    return -1;
 }
