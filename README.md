@@ -7,4 +7,4 @@ Dependencies:
 Build/Run Steps:
 1. unzip the project .zip file into a directory
 2. navigate into the unzipped directory in a terminal
-3. `zig build run` for the main app (or `zig build run-palette` for the color palette previewer)
+3. `zig build run`

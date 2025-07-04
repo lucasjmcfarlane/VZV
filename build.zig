@@ -32,12 +32,14 @@ pub fn build(b: *std.Build) void {
     vzv.addCSourceFiles(.{
         .files = &.{
             "src/main.c",
+            "src/raygui.c",
             "colorschemes/gruvbox/gruvbox.c",
             "src/font_manager.c",
             "src/text_renderer.c",
             "src/file_dialog_manager.c",
             "src/gui_window_file_dialog.c",
             "src/scroll_manager.c",
+            "src/palette.c",
         },
         .flags = &.{},
     });
@@ -55,42 +57,4 @@ pub fn build(b: *std.Build) void {
 
     const vzv_step = b.step("run", "Run VZV");
     vzv_step.dependOn(&run_vzv.step);
-
-
-    //---------------------------Palette---------------------------//
-    
-    //define executable
-    const palette = b.addExecutable(.{
-        .name = "palette",
-        .target = target,
-        .optimize = optimize,
-    });
-
-    //link libraries
-    palette.linkLibrary(raylib);
-    palette.linkSystemLibrary("m");
-    palette.linkLibC();
-
-    // Add source files
-    palette.addCSourceFiles(.{
-        .files = &.{
-            "src/palette.c",
-            "colorschemes/gruvbox/gruvbox.c",
-        },
-        .flags = &.{},
-    });
-
-    // Add include paths
-    palette.addIncludePath(b.path("src"));
-    palette.addIncludePath(b.path("colorschemes/gruvbox"));
-    palette.addIncludePath(raylib_dep.path("include"));
-
-    b.installArtifact(palette);
-
-    //create run step
-    const run_palette = b.addRunArtifact(palette);
-    run_palette.step.dependOn(b.getInstallStep());
-
-    const palette_step = b.step("run-palette", "Run Palette");
-    palette_step.dependOn(&run_palette.step);
 }

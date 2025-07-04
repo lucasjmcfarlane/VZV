@@ -1,10 +1,7 @@
 #include <raylib.h>
 #include <dirent.h>
 
-#define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-#undef RAYGUI_IMPLEMENTATION //don't include raygui implementation again anywhere else
-
 #include "gruvbox.h"
 #include "constants.h"
 #include "font_manager.h"

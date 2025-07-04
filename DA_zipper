@@ -11,7 +11,7 @@ cp README.md VZV/
 cp compile_commands.json VZV/
 
 cd VZV
-zip -r VZV_$1.zip .
-mv VZV_$1.zip ..
+zip -r $1.zip .
+mv $1.zip ..
 cd ..
 rm -rf VZV
